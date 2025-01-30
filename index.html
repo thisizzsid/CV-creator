@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Creator</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>CV Creator</h1>
+            
+        </header>
+        <aside class="left-aside">
+            <nav>
+                <ul>
+                    <li><a href="#personal-info">Personal Information</a></li>
+                    <li><a href="#education">Education</a></li>
+                    <li><a href="#experience">Experience</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <section class="banner">
+            <h2>Welcome to CV Creator</h2>
+            <p>Follow the steps to create your professional CV.</p>
+        </section>
+        <main class="main">
+            <section id="personal-info">
+                <h2>Personal Information</h2>
+                <form id="cvForm" action="/" method="post">
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" id="name" required>
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" id="email" required>
+                    <label for="phone">Phone:</label>
+                    <input type="tel" name="phone" id="phone" required>
+                    <label for="address">Address:</label>
+                    <input type="text" name="address" id="address" required>
+                    <div id="links">
+                        <label for="linkedin">LinkedIn:</label>
+                        <input type="url" name="linkedin" id="linkedin" required>
+                        <label for="github">GitHub:</label>
+                        <input type="url" name="github" id="github" required>
+                        <label for="portfolio">Portfolio:</label>
+                        <input type="url" name="portfolio" id="portfolio" required>
+                    </div>
+                    <button type="button" id="addLinkButton">Add Link</button>
+                    <section id="education">
+                        <h2>Education</h2>
+                        <label for="school">School:</label>
+                        <input type="text" name="school" id="school" required>
+                        <label for="degree">Degree:</label>
+                        <input type="text" name="degree" id="degree" required>
+                        <label for="graduation">Graduation:</label>
+                        <input type="date" name="graduation" id="graduation" required>
+                    </section>
+                    <section id="experience">
+                        <h2>Experience</h2>
+                        <label for="company">Company:</label>
+                        <input type="text" name="company" id="company" required>
+                        <label for="position">Position:</label>
+                        <input type="text" name="position" id="position" required>
+                        <label for="start">Start:</label>
+                        <input type="date" name="start" id="start" required>
+                        <label for="end">End:</label>
+                        <input type="date" name="end" id="end" required>
+                    </section>
+                    <label for="submission-date">Submission Date:</label>
+                    <input type="date" name="submission-date" id="submission-date" required>
+                    <label for="submission-time">Submission Time:</label>
+                    <input type="time" name="submission-time" id="submission-time" required>
+                    <button type="submit">Submit</button>
+                </form>
+            </section>
+        </main>
+        <section class="low-content">
+            <h2>Additional Information</h2>
+            <p>Provide any additional information that might be relevant.</p>
+        </section>
+        <aside class="right-aside">
+            <h2>Tips</h2>
+            <p></p> <!-- Placeholder for dynamic tips -->
+        </aside>
+        <footer class="footer">
+            <p>&copy; 2023 CV Creator. All rights reserved.</p>
+            <p>Contact us: <a href="siddhant.anand17@gmail.com">siddhant.anand17@gmail.com</a></p>
+        </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="index.js"></script>
+    <script>
+        document.getElementById('addLinkButton').addEventListener('click', function() {
+            const linksDiv = document.getElementById('links');
+            const newLinkLabel = document.createElement('label');
+            newLinkLabel.textContent = 'Additional Link:';
+            const newLinkInput = document.createElement('input');
+            newLinkInput.type = 'url';
+            newLinkInput.name = 'additional_links[]';
+            newLinkInput.required = true;
+            linksDiv.appendChild(newLinkLabel);
+            linksDiv.appendChild(newLinkInput);
+        });
+
+        document.getElementById('cvForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.text('Submitted Information', 10, 10);
+            doc.setFontSize(14);
+            doc.text('Personal Information', 10, 20);
+            doc.setFontSize(12);
+            doc.text(`Name: ${formData.get('name')}`, 10, 30);
+            doc.text(`Email: ${formData.get('email')}`, 10, 40);
+            doc.text(`Phone: ${formData.get('phone')}`, 10, 50);
+            doc.text(`Address: ${formData.get('address')}`, 10, 60);
+            doc.text(`LinkedIn: ${formData.get('linkedin')}`, 10, 70);
+            doc.text(`GitHub: ${formData.get('github')}`, 10, 80);
+            doc.text(`Portfolio: ${formData.get('portfolio')}`, 10, 90);
+
+            const additionalLinks = formData.getAll('additional_links[]');
+            additionalLinks.forEach((link, index) => {
+                doc.text(`Additional Link ${index + 1}: ${link}`, 10, 100 + (index * 10));
+            });
+
+            doc.setFontSize(14);
+            doc.text('Education', 10, 110 + (additionalLinks.length * 10));
+            doc.setFontSize(12);
+            doc.text(`School: ${formData.get('school')}`, 10, 120 + (additionalLinks.length * 10));
+            doc.text(`Degree: ${formData.get('degree')}`, 10, 130 + (additionalLinks.length * 10));
+            doc.text(`Graduation: ${formData.get('graduation')}`, 10, 140 + (additionalLinks.length * 10));
+
+            doc.setFontSize(14);
+            doc.text('Experience', 10, 150 + (additionalLinks.length * 10));
+            doc.setFontSize(12);
+            doc.text(`Company: ${formData.get('company')}`, 10, 160 + (additionalLinks.length * 10));
+            doc.text(`Position: ${formData.get('position')}`, 10, 170 + (additionalLinks.length * 10));
+            doc.text(`Start: ${formData.get('start')}`, 10, 180 + (additionalLinks.length * 10));
+            doc.text(`End: ${formData.get('end')}`, 10, 190 + (additionalLinks.length * 10));
+
+            // Add submission date and time to the PDF
+            doc.setFontSize(14);
+            doc.text('Submission Details', 10, 200 + (additionalLinks.length * 10));
+            doc.setFontSize(12);
+            doc.text(`Date: ${formData.get('submission-date')}`, 10, 210 + (additionalLinks.length * 10));
+            doc.text(`Time: ${formData.get('submission-time')}`, 10, 220 + (additionalLinks.length * 10));
+
+            // Generate QR code with detailed information
+            const qr = new QRious({
+                value: `Name: ${formData.get('name')}, Email: ${formData.get('email')}, Phone: ${formData.get('phone')}, Address: ${formData.get('address')}, LinkedIn: ${formData.get('linkedin')}, GitHub: ${formData.get('github')}, Portfolio: ${formData.get('portfolio')}, School: ${formData.get('school')}, Degree: ${formData.get('degree')}, Graduation: ${formData.get('graduation')}, Company: ${formData.get('company')}, Position: ${formData.get('position')}, Start: ${formData.get('start')}, End: ${formData.get('end')}, Submission Date: ${formData.get('submission-date')}, Submission Time: ${formData.get('submission-time')}`,
+                size: 100
+            });
+            const qrDataUrl = qr.toDataURL();
+            doc.addImage(qrDataUrl, 'PNG', 150, 10, 50, 50);
+
+            doc.save('cv.pdf');
+        });
+    </script>
+</body>
+</html>
